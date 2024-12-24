@@ -29,7 +29,7 @@ def generate_referral():
     redirect_link = request.form.get('redirect_link')
     if redirect_link:
         unique_code = generate_unique_code()
-        referral_link = f'https://flask-test.onrender.com/ref?code={unique_code}'
+        referral_link = f'https://flask-test-53ar.onrender.com/ref?code={unique_code}'
         new_referral = Referral(redirect_link=redirect_link, referral_link=referral_link)
         db.session.add(new_referral)
         db.session.commit()
