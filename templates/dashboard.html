@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Referral Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f8f9fa;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #007bff;
+            color: white;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        a {
+            color: #007bff;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        form {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        input[type="url"] {
+            width: 70%;
+            padding: 10px;
+            margin-right: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .copy-button {
+            background-color: #28a745;
+            margin-left: 10px;
+        }
+        .copy-button:hover {
+            background-color: #218838;
+        }
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: rgba(0, 128, 0, 0.8);
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            display: none;
+        }
+    </style>
+    <script>
+        function copyToClipboard(referralLink) {
+            navigator.clipboard.writeText(referralLink).then(() => {
+                const notification = document.getElementById('notification');
+                notification.style.display = 'block';
+                setTimeout(() => {
+                    notification.style.display = 'none';
+                }, 2000);
+            });
+        }
+    </script>
+</head>
+<body>
+    <h1>Referral Dashboard</h1>
+    <form action="/generate" method="POST">
+        <label for="redirect_link">Enter URL:</label>
+        <input type="url" id="redirect_link" name="redirect_link" placeholder="https://example.com" required>
+        <button type="submit">Generate Referral Link</button>
+    </form>
+    <div id="notification" class="notification">Referral link copied to clipboard!</div>
+    <h2>Generated Referral Links</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Redirect Link</th>
+                <th>Referral Link</th>
+                <th>Clicks</th>
+                <th>Income</th> <!-- New Income column -->
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for referral in referrals %}
+            <tr>
+                <td>{{ referral.redirect_link }}</td>
+                <td>
+                    <a href="{{ referral.referral_link }}" target="_blank">{{ referral.referral_link }}</a>
+                </td>
+                <td>{{ referral.click_count }}</td>
+                <td>${{ referral.income | round(2) }}</td> <!-- Display income -->
+                <td>
+                    <button class="copy-button" onclick="copyToClipboard('{{ referral.referral_link }}')">Copy</button>
+                    <form action="/delete/{{ referral.id }}" method="POST" style="display:inline;">
+                        <button type="submit" onclick="return confirm('Are you sure you want to delete this referral link?');">Delete</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>
