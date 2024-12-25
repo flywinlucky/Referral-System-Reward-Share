@@ -7,13 +7,34 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            margin: 20px;
+            margin: 0; /* Remove body margin */
             background-color: #f8f9fa;
         }
         h1, h2 {
             color: #333;
             text-align: center;
             margin-bottom: 10px;
+        }
+        .supertop-border {
+            height: 70px; /* Height for the supertop border */
+            background-color: #0371e7; /* Color for the supertop border */
+            width: 100%; /* Full width */
+            display: flex;
+            align-items: center;
+            margin: 0; /* Ensure no margin */
+            padding: 0; /* Remove padding */
+            box-sizing: border-box; /* Include border and padding in the element's total width */
+        }
+        .top-border {
+            height: 50px; /* Height for the inner top border */
+            background-color: #007bff; /* Color for the top border */
+            display: flex;
+            align-items: center;
+            width: 100%; /* Ensure it fills the supertop border */
+        }
+        .logo {
+            height: 40px; /* Adjust height as needed */
+            margin-right: 20px; /* Space between logo and any text */
         }
         .stats {
             margin: 20px 0;
@@ -185,7 +206,12 @@
     </script>
 </head>
 <body>
-    <h1>Referral Dashboard</h1>
+  <div class="supertop-border">
+    <div class="top-border">
+
+    </div>
+</div>
+
 
     <div class="stats">
         <p><strong>Total Clicks:</strong> {{ stats.total_clicks }}</p>
