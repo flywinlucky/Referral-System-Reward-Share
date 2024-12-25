@@ -10,7 +10,7 @@
             margin: 20px;
             background-color: #f8f9fa;
         }
-        h1 {
+        h1, h2 {
             color: #333;
             text-align: center;
         }
@@ -80,6 +80,12 @@
             border-radius: 5px;
             display: none;
         }
+        .stats {
+            margin: 20px 0;
+            text-align: center;
+            font-size: 1.2em;
+            color: #333;
+        }
     </style>
     <script>
         function copyToClipboard(referralLink) {
@@ -95,12 +101,20 @@
 </head>
 <body>
     <h1>Referral Dashboard</h1>
+
+    <div class="stats">
+        <p><strong>Total Clicks:</strong> {{ stats.total_clicks }}</p>
+        <p><strong>Total Revenue:</strong> ${{ stats.total_revenue | round(2) }}</p>
+    </div>
+
     <form action="/generate" method="POST">
         <label for="redirect_link">Enter URL:</label>
         <input type="url" id="redirect_link" name="redirect_link" placeholder="https://example.com" required>
         <button type="submit">Generate Referral Link</button>
     </form>
+
     <div id="notification" class="notification">Referral link copied to clipboard!</div>
+
     <h2>Generated Referral Links</h2>
     <table>
         <thead>
@@ -108,8 +122,8 @@
                 <th>Redirect Link</th>
                 <th>Referral Link</th>
                 <th>Clicks</th>
-                <th>Income</th> <!-- New Income column -->
-                <th>Action</th>
+                <th>Revenue</th>
+                <th>Actions</th>
             </tr>
         </thead>
         <tbody>
@@ -120,7 +134,7 @@
                     <a href="{{ referral.referral_link }}" target="_blank">{{ referral.referral_link }}</a>
                 </td>
                 <td>{{ referral.click_count }}</td>
-                <td>${{ referral.income | round(2) }}</td> <!-- Display income -->
+                <td>${{ referral.income | round(2) }}</td>
                 <td>
                     <button class="copy-button" onclick="copyToClipboard('{{ referral.referral_link }}')">Copy</button>
                     <form action="/delete/{{ referral.id }}" method="POST" style="display:inline;">
