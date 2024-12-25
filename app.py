@@ -2,18 +2,11 @@ from flask import Flask, render_template, request, redirect
 from flask_sqlalchemy import SQLAlchemy
 import string
 import random
-import os
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'Thisissupposedtobesecret!'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///referrals.db'
 db = SQLAlchemy(app)
-
-# Detectează dacă aplicația rulează local sau pe server
-if os.getenv('FLASK_ENV') == 'production':
-    SERVER_URL = 'https://flask-test-53ar.onrender.com'
-else:
-    SERVER_URL = 'http://127.0.0.1:5000'
 
 class Referral(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -36,7 +29,7 @@ def generate_referral():
     redirect_link = request.form.get('redirect_link')
     if redirect_link:
         unique_code = generate_unique_code()
-        referral_link = f'{SERVER_URL}/ref?code={unique_code}'  # Folosește URL-ul corect
+        referral_link = f'http://127.0.0.1:5000/ref?code={unique_code}'  # http://127.0.0.1:5000   # https://flask-test-53ar.onrender.com
         new_referral = Referral(redirect_link=redirect_link, referral_link=referral_link)
         db.session.add(new_referral)
         db.session.commit()
@@ -87,4 +80,4 @@ def delete_referral(referral_id):
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
-    app.run()
+    app.run()   #app.run(host='0.0.0.0', port=5000)   app.run(debug=True) 
