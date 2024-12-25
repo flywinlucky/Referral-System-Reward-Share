@@ -49,7 +49,7 @@ def generate_referral():
     redirect_link = request.form.get('redirect_link')
     if redirect_link and link_name:
         unique_code = generate_unique_code()
-        referral_link = f'http://127.0.0.1:5000/ref?code={unique_code}'  # Change to your deployment URL
+        referral_link = f'https://flask-test-53ar.onrender.com/ref?code={unique_code}'  # Change to your deployment URL https://flask-test-53ar.onrender.com  http://127.0.0.1:5000/
         new_referral = Referral(link_name=link_name, redirect_link=redirect_link, referral_link=referral_link)
         db.session.add(new_referral)
         db.session.commit()
