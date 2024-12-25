@@ -11,6 +11,7 @@ db = SQLAlchemy(app)
 
 class Referral(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    link_name = db.Column(db.String(150), nullable=False)  # New field for link name
     redirect_link = db.Column(db.String(150), nullable=False)
     referral_link = db.Column(db.String(150), unique=True, nullable=False)
     click_count = db.Column(db.Integer, default=0)
@@ -44,11 +45,12 @@ def dashboard():
 
 @app.route('/generate', methods=['POST'])
 def generate_referral():
+    link_name = request.form.get('link_name')  # Get link name from form
     redirect_link = request.form.get('redirect_link')
-    if redirect_link:
+    if redirect_link and link_name:
         unique_code = generate_unique_code()
         referral_link = f'http://127.0.0.1:5000/ref?code={unique_code}'  # Change to your deployment URL
-        new_referral = Referral(redirect_link=redirect_link, referral_link=referral_link)
+        new_referral = Referral(link_name=link_name, redirect_link=redirect_link, referral_link=referral_link)
         db.session.add(new_referral)
         db.session.commit()
     return redirect('/')
