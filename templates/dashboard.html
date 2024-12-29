@@ -7,7 +7,7 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            margin: 0; /* Remove body margin */
+            margin: 0;
             background-color: #f8f9fa;
         }
         h1, h2 {
@@ -16,46 +16,59 @@
             margin-bottom: 10px;
         }
         .supertop-border {
-            height: 70px; /* Height for the supertop border */
-            background-color: #0371e7; /* Color for the supertop border */
-            width: 100%; /* Full width */
+            height: 70px;
+            background-color: #0371e7;
+            width: 100%;
             display: flex;
             align-items: center;
-            margin: 0; /* Ensure no margin */
-            padding: 0; /* Remove padding */
-            box-sizing: border-box; /* Include border and padding in the element's total width */
+            padding: 0 20px;
         }
-        .top-border {
-            height: 50px; /* Height for the inner top border */
-            background-color: #007bff; /* Color for the top border */
-            display: flex;
-            align-items: center;
-            width: 100%; /* Ensure it fills the supertop border */
+        .nav-button {
+            background-color: #1ca885;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 10px 15px;
+            cursor: pointer;
+            margin-right: 10px;
+            transition: background-color 0.3s;
         }
-        .logo {
-            height: 40px; /* Adjust height as needed */
-            margin-right: 20px; /* Space between logo and any text */
+        .nav-button:hover {
+            background-color: #259c7e;
         }
         .stats {
-            margin: 20px 0;
+            background-color: #ddeeff;
+            margin: 30px 0;
             text-align: center;
-            font-size: 1.2em;
+            font-size: 1.4em;
             color: #333;
         }
-        .form-container {
-            margin-bottom: 20px;
+        .modal {
+            display: none; 
+            position: fixed; 
+            z-index: 1000; 
+            left: 0;
+            top: 0;
+            width: 100%; 
+            height: 100%; 
+            overflow: auto; 
+            background-color: rgba(0,0,0,0.4); 
+            padding-top: 60px; 
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: 5% auto; 
             padding: 20px;
-            background-color: white;
+            border: 1px solid #888;
+            width: 80%; 
+            max-width: 500px;
             border-radius: 8px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            max-width: 600px;
-            margin: 0 auto;
         }
         .form-group {
             margin-bottom: 15px;
-            display: flex;
-            flex-direction: column;
-            align-items: stretch;
+            display: flex;            /* Center children */
+    justify-content: center;  /* Align children horizontally */
         }
         label {
             margin-bottom: 5px;
@@ -83,24 +96,18 @@
         button:hover {
             background-color: #0056b3;
         }
-        .copy-button {
-            background-color: #28a745;
-            margin-left: 10px;
-        }
-        .copy-button:hover {
-            background-color: #218838;
-        }
         .notification {
             position: fixed;
             top: 20px;
             right: 20px;
-            background-color: rgba(0, 128, 0, 0.8);
+            background-color: #0fdd0fd5;
             color: white;
             padding: 10px;
             border-radius: 5px;
             display: none;
         }
         .referral-container {
+            background-color: #007bff;
             max-height: 400px;
             overflow-y: auto;
             margin: 0 auto;
@@ -120,7 +127,7 @@
         }
         th, td {
             padding: 10px;
-            text-align: left;
+            text-align: center;
         }
         th {
             background-color: #007bff;
@@ -136,7 +143,7 @@
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
-            max-width: 150px;
+            max-width: 100px;
         }
 
         /* Responsive Design */
@@ -145,51 +152,12 @@
                 padding: 15px;
                 width: 95%;
             }
-            .form-group {
-                margin-bottom: 10px;
-            }
             button {
                 width: 100%;
-                margin-top: 5px; /* Reduced margin for buttons */
+                margin-top: 5px;
             }
             .stats {
-                font-size: 1em; /* Smaller font size on mobile */
-            }
-            h1 {
-                font-size: 1.5em; /* Adjusted header size */
-            }
-            h2 {
-                font-size: 1.3em; /* Adjusted sub-header size */
-            }
-            .referral-container {
-                max-height: 300px; /* Smaller max height for mobile */
-            }
-            table {
-                font-size: 0.9em; /* Smaller font size for table */
-            }
-            th, td {
-                padding: 8px; /* Smaller padding for table cells */
-            }
-            .truncated {
-                max-width: 120px; /* Reduced width for mobile */
-            }
-        }
-
-        @media (max-width: 480px) {
-            .form-container {
-                padding: 10px;
-            }
-            h1 {
-                font-size: 1.3em; /* Smaller header for very small screens */
-            }
-            h2 {
-                font-size: 1.2em; /* Smaller sub-header for very small screens */
-            }
-            button {
-                padding: 8px 15px; /* Smaller button padding */
-            }
-            th, td {
-                padding: 6px; /* Smaller padding for table cells */
+                font-size: 1em;
             }
         }
     </style>
@@ -203,70 +171,117 @@
                 }, 2000);
             });
         }
+
+        function openModal() {
+            document.getElementById("myModal").style.display = "block";
+        }
+
+        function closeModal() {
+            document.getElementById("myModal").style.display = "none";
+        }
+
+        function openEditModal(linkName, redirectLink, referralId) {
+            document.getElementById("editLinkName").value = linkName;
+            document.getElementById("editRedirectLink").value = redirectLink;
+            document.getElementById("editReferralId").value = referralId;
+            document.getElementById("editModal").style.display = "block";
+        }
+
+        function closeEditModal() {
+            document.getElementById("editModal").style.display = "none";
+        }
     </script>
 </head>
 <body>
-  <div class="supertop-border">
-    <div class="top-border">
 
-    </div>
+<div class="supertop-border">
+    <button class="nav-button" onclick="openModal()">Create New Referral Link</button>
+    <button class="nav-button" onclick="openModal()">FAQ</button>
+    <button class="nav-button" onclick="openModal()">CONTACT</button>
+    <button class="nav-button" onclick="openModal()">ADMIN</button>
 </div>
 
+<div class="stats">
+    <p><strong>Total Clicks:</strong> {{ stats.total_clicks }}</p>
+    <p><strong>Total Revenue:</strong> ${{ stats.total_revenue | round(2) }}</p>
+</div>
 
-    <div class="stats">
-        <p><strong>Total Clicks:</strong> {{ stats.total_clicks }}</p>
-        <p><strong>Total Revenue:</strong> ${{ stats.total_revenue | round(2) }}</p>
-    </div>
-    
-    <div class="form-container">
+<div id="notification" class="notification">Referral link copied to clipboard!</div>
+
+<!-- Modal for Creating Referral Links -->
+<div id="myModal" class="modal">
+    <div class="modal-content">
+        <span onclick="closeModal()" style="cursor:pointer; float:right; font-size:20px; color:red;">&times;</span>
+        <h2>Create Referral Link</h2>
         <form action="/generate" method="POST">
+            <label for="link_name">Link Name</label>
             <div class="form-group">
-                <label for="link_name">Link Name:</label>
                 <input type="text" id="link_name" name="link_name" placeholder="My Referral Link Name" required>
             </div>
+            <label for="redirect_link">Redirect URL</label>
             <div class="form-group">
-                <label for="redirect_link">Redirect URL:</label>
                 <input type="url" id="redirect_link" name="redirect_link" placeholder="https://example.com" required>
             </div>
             <button type="submit">Generate Referral Link</button>
         </form>
     </div>
+</div>
 
-    <div id="notification" class="notification">Referral link copied to clipboard!</div>
-
-    <h2>Generated Referral Links</h2>
-    <div class="referral-container">
-        <table>
-            <thead>
-                <tr>
-                    <th>Link Name</th>
-                    <th>Redirect Link</th>
-                    <th>Referral Link</th>
-                    <th>Clicks</th>
-                    <th>Revenue</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for referral in referrals %}
-                <tr>
-                    <td>{{ referral.link_name }}</td>
-                    <td class="truncated">{{ referral.redirect_link }}</td>
-                    <td>
-                        <a href="{{ referral.referral_link }}" target="_blank">{{ referral.referral_link }}</a>
-                    </td>
-                    <td>{{ referral.click_count }}</td>
-                    <td>${{ referral.income | round(2) }}</td>
-                    <td>
-                        <button class="copy-button" onclick="copyToClipboard('{{ referral.referral_link }}')">Copy</button>
-                        <form action="/delete/{{ referral.id }}" method="POST" style="display:inline;">
-                            <button type="submit" onclick="return confirm('Are you sure you want to delete this referral link?');">Delete</button>
-                        </form>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+<!-- Modal for Editing Referral Links -->
+<div id="editModal" class="modal">
+    <div class="modal-content">
+        <span onclick="closeEditModal()" style="cursor:pointer; float:right; font-size:20px; color:red;">&times;</span>
+        <h2>Edit Referral Link</h2>
+        <form action="/edit" method="POST">
+            <label for="editLinkName">Link Name</label>
+            <div class="form-group">
+                <input type="text" id="editLinkName" name="link_name" placeholder="Link Name" required>
+            </div>
+            <label for="editRedirectLink">Redirect URL</label>
+            <div class="form-group">
+                <input type="url" id="editRedirectLink" name="redirect_link" placeholder="https://example.com" required>
+            </div>
+            <input type="hidden" id="editReferralId" name="referral_id">
+            <button type="submit">Save Changes</button>
+        </form>
     </div>
+</div>
+
+<h2>Generated Referral Links</h2>
+<div class="referral-container">
+    <table>
+        <thead>
+            <tr>
+                <th>Link Name</th>
+                <th>Redirect Link</th>
+                <th>Referral Link</th>
+                <th>Clicks</th>
+                <th>Revenue</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for referral in referrals %}
+            <tr>
+                <td>{{ referral.link_name }}</td>
+                <td class="truncated">{{ referral.redirect_link }}</td>
+                <td>
+                    <a href="{{ referral.referral_link }}" target="_blank">{{ referral.referral_link }}</a>
+                </td>
+                <td>{{ referral.click_count }}</td>
+                <td>${{ referral.income | round(2) }}</td>
+                <td>
+                    <button class="copy-button" onclick="copyToClipboard('{{ referral.referral_link }}')">Copy</button>
+                    <button onclick="openEditModal('{{ referral.link_name }}', '{{ referral.redirect_link }}', {{ referral.id }})">Edit</button>
+                    <form action="/delete/{{ referral.id }}" method="POST" style="display:inline;">
+                        <button type="submit" onclick="return confirm('Are you sure you want to delete this referral link?');">Delete</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
 </body>
 </html>

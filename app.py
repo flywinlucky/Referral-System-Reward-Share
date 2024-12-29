@@ -11,7 +11,7 @@ db = SQLAlchemy(app)
 
 class Referral(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    link_name = db.Column(db.String(150), nullable=False)  # New field for link name
+    link_name = db.Column(db.String(150), nullable=False)  # Field for link name
     redirect_link = db.Column(db.String(150), nullable=False)
     referral_link = db.Column(db.String(150), unique=True, nullable=False)
     click_count = db.Column(db.Integer, default=0)
@@ -49,7 +49,7 @@ def generate_referral():
     redirect_link = request.form.get('redirect_link')
     if redirect_link and link_name:
         unique_code = generate_unique_code()
-        referral_link = f'https://flask-test-53ar.onrender.com/ref?code={unique_code}'  # Change to your deployment URL https://flask-test-53ar.onrender.com  http://127.0.0.1:5000/ www.temkatut.com
+        referral_link = f'http://127.0.0.1:5000/ref?code={unique_code}'  # Change to your deployment URL
         new_referral = Referral(link_name=link_name, redirect_link=redirect_link, referral_link=referral_link)
         db.session.add(new_referral)
         db.session.commit()
@@ -77,7 +77,7 @@ def handle_referral():
     return "Referral link not found.", 404
 
 
-@app.route('/purchase<refer_name>income<income_amount>', methods=['GET'])
+@app.route('/purchase/<refer_name>/<income_amount>', methods=['GET'])
 def purchase(refer_name, income_amount):
     try:
         income_amount = float(income_amount)
@@ -101,6 +101,20 @@ def delete_referral(referral_id):
     referral = Referral.query.get(referral_id)
     if referral:
         db.session.delete(referral)
+        db.session.commit()
+    return redirect('/')
+
+
+@app.route('/edit', methods=['POST'])
+def edit_referral():
+    link_name = request.form.get('link_name')
+    redirect_link = request.form.get('redirect_link')
+    referral_id = request.form.get('referral_id')
+
+    referral = Referral.query.get(referral_id)
+    if referral:
+        referral.link_name = link_name
+        referral.redirect_link = redirect_link
         db.session.commit()
     return redirect('/')
 
