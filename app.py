@@ -16,6 +16,7 @@ class Referral(db.Model):
     referral_link = db.Column(db.String(150), unique=True, nullable=False)
     click_count = db.Column(db.Integer, default=0)
     income = db.Column(db.Float, default=0.0)
+    revenue_share = db.Column(db.Integer, nullable=False)  # Field for revenue share percentage
 
 
 class GlobalStats(db.Model):
@@ -32,14 +33,11 @@ def generate_unique_code():
 @app.route('/')
 def dashboard():
     referrals = Referral.query.all()
-
-    # Ensure global stats exist
     stats = GlobalStats.query.first()
     if not stats:
         stats = GlobalStats(total_clicks=0, total_revenue=0.0)
         db.session.add(stats)
         db.session.commit()
-
     return render_template('dashboard.html', referrals=referrals, stats=stats)
 
 
@@ -47,10 +45,11 @@ def dashboard():
 def generate_referral():
     link_name = request.form.get('link_name')  # Get link name from form
     redirect_link = request.form.get('redirect_link')
-    if redirect_link and link_name:
+    revenue_share = request.form.get('revenue_share')
+    if redirect_link and link_name and revenue_share:
         unique_code = generate_unique_code()
         referral_link = f'http://127.0.0.1:5000/ref?code={unique_code}'  # Change to your deployment URL https://flask-test-53ar.onrender.com
-        new_referral = Referral(link_name=link_name, redirect_link=redirect_link, referral_link=referral_link)
+        new_referral = Referral(link_name=link_name, redirect_link=redirect_link, referral_link=referral_link, revenue_share=int(revenue_share))
         db.session.add(new_referral)
         db.session.commit()
     return redirect('/')
@@ -86,11 +85,13 @@ def purchase(refer_name, income_amount):
 
     referral = Referral.query.filter(Referral.referral_link.contains(refer_name)).first()
     if referral:
-        referral.income += income_amount
+        referral_income = income_amount * (referral.revenue_share / 100)
+        admin_income = income_amount - referral_income
+        referral.income += referral_income
 
         # Update global revenue
         stats = GlobalStats.query.first()
-        stats.total_revenue += income_amount
+        stats.total_revenue += admin_income
         db.session.commit()
         return redirect('/')
     return "Referral link not found.", 404
@@ -109,12 +110,14 @@ def delete_referral(referral_id):
 def edit_referral():
     link_name = request.form.get('link_name')
     redirect_link = request.form.get('redirect_link')
+    revenue_share = request.form.get('revenue_share')
     referral_id = request.form.get('referral_id')
 
     referral = Referral.query.get(referral_id)
     if referral:
         referral.link_name = link_name
         referral.redirect_link = redirect_link
+        referral.revenue_share = int(revenue_share)
         db.session.commit()
     return redirect('/')
 

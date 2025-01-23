@@ -15,13 +15,19 @@
             text-align: center;
             margin-bottom: 10px;
         }
-        .supertop-border {
-            height: 70px;
+        .navbar {
             background-color: #0371e7;
-            width: 100%;
+            padding: 10px 20px;
             display: flex;
+            justify-content: space-between;
             align-items: center;
-            padding: 0 20px;
+        }
+        .navbar h1 {
+            color: white;
+            margin: 0;
+        }
+        .navbar .nav-buttons {
+            display: flex;
         }
         .nav-button {
             background-color: #1ca885;
@@ -180,9 +186,10 @@
             document.getElementById("myModal").style.display = "none";
         }
 
-        function openEditModal(linkName, redirectLink, referralId) {
+        function openEditModal(linkName, redirectLink, revenueShare, referralId) {
             document.getElementById("editLinkName").value = linkName;
             document.getElementById("editRedirectLink").value = redirectLink;
+            document.getElementById("editRevenueShare").value = revenueShare;
             document.getElementById("editReferralId").value = referralId;
             document.getElementById("editModal").style.display = "block";
         }
@@ -194,8 +201,11 @@
 </head>
 <body>
 
-<div class="supertop-border">
-    <button class="nav-button" onclick="openModal()">Create New Referral Link</button>
+<div class="navbar">
+    <h1>Referral Dashboard</h1>
+    <div class="nav-buttons">
+        <button class="nav-button" onclick="openModal()">Create New Referral Link</button>
+    </div>
 </div>
 
 <div class="stats">
@@ -219,6 +229,10 @@
             <div class="form-group">
                 <input type="url" id="redirect_link" name="redirect_link" placeholder="https://example.com" required>
             </div>
+            <label for="revenue_share">Revenue Share (%)</label>
+            <div class="form-group">
+                <input type="number" id="revenue_share" name="revenue_share" placeholder="50" required>
+            </div>
             <button type="submit">Generate Referral Link</button>
         </form>
     </div>
@@ -238,6 +252,10 @@
             <div class="form-group">
                 <input type="url" id="editRedirectLink" name="redirect_link" placeholder="https://example.com" required>
             </div>
+            <label for="editRevenueShare">Revenue Share (%)</label>
+            <div class="form-group">
+                <input type="number" id="editRevenueShare" name="revenue_share" placeholder="50" required>
+            </div>
             <input type="hidden" id="editReferralId" name="referral_id">
             <button type="submit">Save Changes</button>
         </form>
@@ -254,6 +272,7 @@
                 <th>Referral Link</th>
                 <th>Clicks</th>
                 <th>Revenue</th>
+                <th>Revenue Share (%)</th>
                 <th>Actions</th>
             </tr>
         </thead>
@@ -267,9 +286,10 @@
                 </td>
                 <td>{{ referral.click_count }}</td>
                 <td>${{ referral.income | round(2) }}</td>
+                <td>{{ referral.revenue_share }}%</td>
                 <td>
                     <button class="copy-button" onclick="copyToClipboard('{{ referral.referral_link }}')">Copy</button>
-                    <button onclick="openEditModal('{{ referral.link_name }}', '{{ referral.redirect_link }}', {{ referral.id }})">Edit</button>
+                    <button onclick="openEditModal('{{ referral.link_name }}', '{{ referral.redirect_link }}', {{ referral.revenue_share }}, {{ referral.id }})">Edit</button>
                     <form action="/delete/{{ referral.id }}" method="POST" style="display:inline;">
                         <button type="submit" onclick="return confirm('Are you sure you want to delete this referral link?');">Delete</button>
                     </form>
