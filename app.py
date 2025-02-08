@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect
+from flask import Flask, render_template, request, redirect, jsonify
 from flask_sqlalchemy import SQLAlchemy
 import string
 import random
@@ -120,6 +120,20 @@ def edit_referral():
         referral.revenue_share = int(revenue_share)
         db.session.commit()
     return redirect('/')
+
+
+@app.route('/referral/<int:referral_id>', methods=['GET'])
+def get_referral(referral_id):
+    referral = Referral.query.get(referral_id)
+    if referral:
+        return jsonify({
+            'link_name': referral.link_name,
+            'referral_link': referral.referral_link,
+            'click_count': referral.click_count,
+            'income': referral.income,
+            'revenue_share': referral.revenue_share
+        })
+    return jsonify({'error': 'Referral link not found.'}), 404
 
 
 if __name__ == '__main__':
