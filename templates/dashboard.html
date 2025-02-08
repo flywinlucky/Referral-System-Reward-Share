@@ -75,6 +75,7 @@
     <table>
         <thead>
             <tr>
+                <th>ID</th>
                 <th>Link Name</th>
                 <th>Redirect Link</th>
                 <th>Referral Link</th>
@@ -87,6 +88,10 @@
         <tbody>
             {% for referral in referrals %}
             <tr>
+                <td>
+                    <span id="referral-id-{{ referral.id }}">{{ referral.id }}</span>
+                    <button class="copy-button" onclick="copyToClipboard('{{ referral.id }}')">Copy</button>
+                </td>
                 <td>{{ referral.link_name }}</td>
                 <td class="truncated">{{ referral.redirect_link }}</td>
                 <td>
