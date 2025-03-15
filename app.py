@@ -48,7 +48,7 @@ def generate_referral():
     revenue_share = request.form.get('revenue_share')
     if redirect_link and link_name and revenue_share:
         unique_code = generate_unique_code()
-        referral_link = f'http://127.0.0.1:5000/ref?code={unique_code}'  # Change to your deployment URL https://flask-test-53ar.onrender.com
+        referral_link = f'https://flask-test-53ar.onrender.com/ref?code={unique_code}'  # Change to your deployment URL https://flask-test-53ar.onrender.com
         new_referral = Referral(link_name=link_name, redirect_link=redirect_link, referral_link=referral_link, revenue_share=int(revenue_share))
         db.session.add(new_referral)
         db.session.commit()
